@@ -1,0 +1,26 @@
+# Quartus generated files
+db/
+incremental_db/
+output_files/
+*.rpt
+*.smsg
+*.qws
+*.qdf
+*.qsf.bak
+*.qpf.bak
+
+# ModelSim simulation files
+work/
+transcript
+*.wlf
+*.log
+
+# Temporary / OS files
+*.bak
+*.swp
+.DS_Store
+Thumbs.db
+
+# Python cache
+__pycache__/
+*.pyc
