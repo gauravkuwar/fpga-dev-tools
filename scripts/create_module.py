@@ -25,15 +25,13 @@ def create_module(module_name: str, clked: bool, force: bool = False):
 
     # Template files
     templates = {
-        "src": TEMPLATE_DIR / ("entity_clk.vhd" if clked else "entity.vhd"),
-        "sim": TEMPLATE_DIR / ("testbench_clk.vhd" if clked else "testbench.vhd"),
-        "qsf": TEMPLATE_DIR / "qsf_snippet.tcl"
+        "src": TEMPLATE_DIR / ("entity_clk.vhd.tpl" if clked else "entity.vhd.tpl"),
+        "qsf": TEMPLATE_DIR / "qsf_snippet.tcl.tpl"
     }
 
     # Destination files
     destinations = {
         "src": base_path / "src" / f"{module_name}.vhd",
-        "sim": base_path / "sim" / "testbench.vhd",
         "qsf": base_path / "qsf" / "qsf_snippet.tcl"
     }
 

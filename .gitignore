@@ -1,3 +1,5 @@
+venv/
+
 # Quartus generated files
 db/
 incremental_db/
@@ -9,11 +11,13 @@ output_files/
 *.qsf.bak
 *.qpf.bak
 
-# ModelSim simulation files
-work/
-transcript
-*.wlf
-*.log
+# ghdl and gtkwave simulation files
+ghdl_work/
+*.gtkw
+*.vcd
+testbench
+*.o
+
 
 # Temporary / OS files
 *.bak

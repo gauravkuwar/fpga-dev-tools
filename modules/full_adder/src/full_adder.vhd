@@ -9,7 +9,7 @@ entity full_adder is
     b           : in  std_logic;       -- Input operand B
     carry_in    : in  std_logic;
     result      : out std_logic;       -- Output result
-    carry_out   : out std_logic;
+    carry_out   : out std_logic
   );
 end entity;
 

@@ -11,22 +11,22 @@ entity adder_32bit is
     a      : in  std_logic_vector(31 downto 0);       -- Input operand A
     b      : in  std_logic_vector(31 downto 0);       -- Input operand B
     result : out std_logic_vector(31 downto 0);       -- Output result
-    ovf    : out std_logic;
+    ovf    : out std_logic
   );
 end entity;
 
 -- Architecture definition
 architecture combinational of adder_32bit is
-  signal carries : std_logic(31 downto 0);
-  signal sum_0   : std_logic(31 downto 0);
+  signal carries : std_logic_vector(31 downto 0);
+  signal sum_0   : std_logic_vector(31 downto 0);
 begin
   -- uses carry chain hardware
   ha0 : entity work.half_adder
   port map (
-    a         => a,
-    b         => b,
-    result    => sum_0,
-    carry_out => carry_0
+    a         => a(0),
+    b         => b(0),
+    result    => sum_0(0),
+    carry_out => carries(0)
   );
 
   gen_ripple : for i in 1 to 31 generate
@@ -44,6 +44,6 @@ begin
 
   -- Overflow detection for signed addition:
   -- Should not slow down addition computation, since it happens in parallel
-  -- a(31) = b(31) and result(3115) /= a(31)
-  ovf <= not (a(31) xor b(31)) and (a(31) xor sum_0(7));
+  -- a(31) = b(31) and result(31) /= a(31)
+  ovf <= not (a(31) xor b(31)) and (a(31) xor sum_0(31));
 end architecture;
