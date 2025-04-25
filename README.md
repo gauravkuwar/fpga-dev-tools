@@ -4,6 +4,8 @@ This repo provides a streamlined FPGA development workflow using **Quartus**, **
 
 It is tailored for a split setup where most development is done on **macOS**, and **Quartus commands are offloaded to a Windows machine**.
 
+The idea is to use this as a startup template.
+
 ## Modular Structure
 
 Each FPGA component is organized as a module containing:
