@@ -1,15 +1,5 @@
-venv/
-
 # Quartus generated files
-db/
-incremental_db/
-output_files/
-*.rpt
-*.smsg
-*.qws
-*.qdf
-*.qsf.bak
-*.qpf.bak
+quartus/**/*
 
 # ghdl and gtkwave simulation files
 ghdl_work/
@@ -28,3 +18,7 @@ Thumbs.db
 # Python cache
 __pycache__/
 *.pyc
+
+# python + offloader
+.venv
+.filehashes.json

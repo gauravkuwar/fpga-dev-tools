@@ -1,8 +1,9 @@
 import re
 from pathlib import Path
+import sys
+sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-# Base paths relative to project root
-MODULES_DIR = Path("modules")
+from helper.config import MODULES_DIR
 
 component_pattern = re.compile(r"\bcomponent\s+(\w+)", re.IGNORECASE)
 entity_pattern = re.compile(r"\bentity\s+work\.(\w+)", re.IGNORECASE)

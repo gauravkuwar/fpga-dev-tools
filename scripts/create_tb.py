@@ -1,9 +1,9 @@
 from pathlib import Path
 import sys
-from helper.signal_parser import parse_ports
+sys.path.append(str(Path(__file__).resolve().parent))
 
-TEMPLATE_DIR = Path("templates")
-MODULES_DIR = Path("modules")
+from helper.signal_parser import parse_ports
+from helper.config import MODULES_DIR, TEMPLATES_DIR
 
 def is_clock_port(port):
     return port.lower() in ['clk', 'clock']
@@ -34,8 +34,10 @@ def create_tb(module_name: str, force: bool = False):
     ports = parse_ports(entity_path)
     clked = is_clocked(ports)
 
-    template_file = TEMPLATE_DIR / ("testbench_clk.vhd.tpl" if clked else "testbench.vhd.tpl")
+    template_file = TEMPLATES_DIR / ("testbench_clk.vhd.tpl" if clked else "testbench.vhd.tpl")
     output_file.parent.mkdir(parents=True, exist_ok=True)
+
+    print(entity_path)
 
     with open(template_file, "r") as template:
         content = template.read()

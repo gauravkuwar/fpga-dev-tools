@@ -1,6 +1,13 @@
 import re
 from pathlib import Path
 
+if __name__ == "__main__":
+    import sys
+    sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+from helper.config import MODULES_DIR
+
+
 def parse_ports(vhdl_file):
     ports = []
     final_ports = {}
@@ -41,8 +48,7 @@ def parse_ports(vhdl_file):
     return final_ports
 
 if __name__ == "__main__":
-    MODULES_DIR = Path("modules")
-    module_name = "adder_32bit"
+    module_name = "array_mul_8x8_pl"
     src_file = MODULES_DIR / module_name / "src" / f"{module_name}.vhd"
 
     # Example usage:

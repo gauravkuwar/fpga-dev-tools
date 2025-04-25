@@ -1,10 +1,8 @@
 from pathlib import Path
 import sys
-from helper.generate_qsf_snippet import generate_qsf_snippet
+sys.path.append(str(Path(__file__).resolve().parent))
 
-# Base paths relative to project root
-TEMPLATE_DIR = Path("templates")
-MODULES_DIR = Path("modules")
+from helper.config import MODULES_DIR, TEMPLATES_DIR
 
 def create_module(module_name: str, clked: bool, force: bool = False):
     base_path = MODULES_DIR / module_name
@@ -15,7 +13,7 @@ def create_module(module_name: str, clked: bool, force: bool = False):
         return
 
     # Recreate directory structure if forcing
-    subdirs = ["src", "sim", "qsf"]
+    subdirs = ["src", "sim"]
     for subdir in subdirs:
         full_path = base_path / subdir
         if force and full_path.exists():
@@ -23,24 +21,14 @@ def create_module(module_name: str, clked: bool, force: bool = False):
                 file.unlink()
         full_path.mkdir(parents=True, exist_ok=True)
 
-    # Template files
-    templates = {
-        "src": TEMPLATE_DIR / ("entity_clk.vhd.tpl" if clked else "entity.vhd.tpl"),
-        "qsf": TEMPLATE_DIR / "qsf_snippet.tcl.tpl"
-    }
 
-    # Destination files
-    destinations = {
-        "src": base_path / "src" / f"{module_name}.vhd",
-        "qsf": base_path / "qsf" / "qsf_snippet.tcl"
-    }
+    entity_template = TEMPLATES_DIR / ("entity_clk.vhd.tpl" if clked else "entity.vhd.tpl")
+    entity_dest     = base_path / "src" / f"{module_name}.vhd"
 
-    # Generate files from templates
-    for key in templates:
-        with open(templates[key], "r") as src, open(destinations[key], "w") as dst:
-            content = src.read().replace("{{MODULE_NAME}}", module_name)
-            dst.write(content)
-            print(f"Created {destinations[key]}")
+    with open(entity_template, "r") as src, open(entity_dest, "w") as dst:
+        content = src.read().replace("{{MODULE_NAME}}", module_name)
+        dst.write(content)
+        print(f"Created {entity_dest}")
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -51,4 +39,3 @@ if __name__ == "__main__":
     clked = "--clk" in sys.argv[2:]
     force = "-f" in sys.argv[2:]
     create_module(module_name, clked, force)
-    generate_qsf_snippet(module_name)
