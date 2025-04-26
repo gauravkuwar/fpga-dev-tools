@@ -64,11 +64,14 @@ def run(cmd: str, dir: str = REMOTE_DIR):
             cmd_wrapped = f"bash -c 'trap \"echo __INTERRUPTED__; exit 130\" INT TERM; {cmd}'"
             result = conn.run(cmd_wrapped, pty=True, hide=False, warn=True)
             if result.stdout.splitlines()[-1] == "__INTERRUPTED__":
-                return -1
+                sys.exit(1)
+    except KeyboardInterrupt:
+        print("KEY BOARD INTERR")
+        sys.exit(1)
     except UnexpectedExit as e:
         print(f"\nRemote command failed: {cmd}")
         print(f"Exit code: {e.result.exited}")
-        return -1
+        sys.exit(1)
     
 def get_output_files(dir: str):
     conn = Connection(REMOTE_HOST, connect_kwargs={"key_filename": str(SSH_KEY_PATH)})
@@ -91,4 +94,4 @@ def get_output_files(dir: str):
     except UnexpectedExit as e:
         print(f"\nRemote command failed while fetching outputing files")
         print(f"Exit code: {e.result.exited}")
-        return -1
+        sys.exit(1)

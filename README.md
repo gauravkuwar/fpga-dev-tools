@@ -1,8 +1,8 @@
 # FPGA Dev Tools
 
-This repo provides a streamlined FPGA development workflow using **Quartus**, **GHDL**, and **GTKWave**, with automation scripts to accelerate iteration.
+This repo provides a streamlined FPGA development workflow using **Quartus**, and **ModelSim** with automation scripts to accelerate iteration.
 
-It is tailored for a split setup where most development is done on **macOS**, and **Quartus commands are offloaded to a Windows machine**.
+It is tailored for a split setup where most development is done on **macOS**, and **Quartus and ModelSim commands are offloaded to a Windows machine**.
 
 The idea is to use this as a startup template.
 
@@ -18,7 +18,7 @@ Each FPGA component is organized as a module containing:
 |-------------------|---------|
 | `create_module.py` | Scaffold a new module with template VHDL code |
 | `create_tb.py`     | Scaffold a testbench from an existing entity with pre-defined signals|
-| `gen_waveform.py`  | Run GHDL simulation and launch GTKWave with preloaded signals |
+| `sim.py`           | Compile, Simulate, and load UI/Wave configuration in ModelSim |
 | `offloader.py`     | Helper script to offload Quartus commands to Windows |
 | `quartus.py`       | Abstracts Quartus execution and offloading, and report results |
 

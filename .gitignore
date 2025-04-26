@@ -1,12 +1,9 @@
 # Quartus generated files
 quartus/**/*
 
-# ghdl and gtkwave simulation files
-ghdl_work/
-*.gtkw
-*.vcd
-testbench
-*.o
+# modelsim
+*.do
+
 
 
 # Temporary / OS files

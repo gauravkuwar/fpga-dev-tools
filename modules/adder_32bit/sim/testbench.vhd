@@ -41,7 +41,7 @@ begin
     b <= std_logic_vector(to_unsigned(2, 32));
     wait for 10 ns;
 
-    assert result = std_logic_vector(to_unsigned(5, 32))
+    assert result = std_logic_vector(to_unsigned(3, 32))
     report "Adder result incorrect: expected 3"
     severity error;
     wait;

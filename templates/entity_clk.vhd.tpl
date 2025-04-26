@@ -12,7 +12,7 @@ entity {{MODULE_NAME}} is
     b      : in  std_logic_vector(7 downto 0);       -- Input operand B
     result : out std_logic_vector(15 downto 0);      -- Output result
     done   : out std_logic;                          -- Output flag - pipeline completed 1 result
-    busy   : out std_logic;                          -- Output flag - pipeline is busy
+    busy   : out std_logic                           -- Output flag - pipeline is busy
   );
 end entity;
 

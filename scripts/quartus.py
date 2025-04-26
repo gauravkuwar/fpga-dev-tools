@@ -86,21 +86,17 @@ def main():
         sync_files(dep_files)
 
     if args.clean:
-        if run(f"quartus_sh --clean {project_name}", project_path) == -1:
-            return
+        run(f"quartus_sh --clean {project_name}", project_path)
 
     if args.compile:
-        if run(f"quartus_sh --flow compile {project_name}", project_path) == -1:
-            return
+        run(f"quartus_sh --flow compile {project_name}", project_path)
 
     if args.program:
-        if run(f"quartus_pgm -m JTAG -o p;{project_name}.sof", project_path) == -1:
-            return
+        run(f"quartus_pgm -m JTAG -o p;{project_name}.sof", project_path)
 
     if args.update_mif:
-        if run(f"quartus_asm --read_settings_files=on --write_settings_files=off {project_name}", project_path) == -1:
-            return
-
+        run(f"quartus_asm --read_settings_files=on --write_settings_files=off {project_name}", project_path)
+        
     if args.compile:
         get_output_files(project_path)
 
