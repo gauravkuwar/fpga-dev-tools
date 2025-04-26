@@ -1,6 +1,6 @@
 from pathlib import Path
 
-PROJECT_NAME = "fpga_dev_tools"
+PROJECT_NAME = "nn_fpga_2"
 
 # Resolve project root from this file's location
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
