@@ -3,40 +3,22 @@ from fabric import Connection
 from pathlib import Path, PurePosixPath
 from invoke.exceptions import UnexpectedExit
 import subprocess
-import hashlib
-import json
 import sys
 sys.path.append(str(Path(__file__).resolve().parent))
 
+from helper.util import file_changed
 from helper.config import (
-    HASH_FILE,
+    OFFLOADER_HASH_FILE,
     REMOTE_HOST,
     SSH_KEY_PATH,
     REMOTE_DIR
     )
 
-# === UTILS ===
-def file_hash(path):
-    with open(path, "rb") as f:
-        return hashlib.sha256(f.read()).hexdigest()
-
-def should_send(path):
-    key = str(path)
-    current = file_hash(path)
-    hashes = {}
-    if HASH_FILE.exists():
-        hashes = json.loads(HASH_FILE.read_text())
-    if hashes.get(key) != current:
-        hashes[key] = current
-        HASH_FILE.write_text(json.dumps(hashes, indent=2))
-        return True
-    return False
-
 def sync_files(input_files: list[str]):
     print("Syncing files...")
     for f in input_files:
         local_path = Path(f)
-        if local_path.is_file() and not should_send(local_path):
+        if local_path.is_file() and not file_changed(local_path, OFFLOADER_HASH_FILE):
             print(f"Skipping unchanged: {f}")
             continue
         

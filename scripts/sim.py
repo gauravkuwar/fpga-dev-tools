@@ -5,7 +5,7 @@ sys.path.append(str(Path(__file__).resolve().parent))
 from helper.dependency import find_dependents
 from helper.config import MODULES_DIR, PROJECT_ROOT, TEMPLATES_DIR
 from helper.signal_parser import parse_ports
-from helper.util import is_clock_port
+from helper.util import is_clock_port, file_changed
 from offloader import sync_files, run
 
 def simulate(module_name):
@@ -55,15 +55,17 @@ def compile(module_name):
 
     for dep in find_dependents(module_name) + [module_name]:
         # relative to sim dir
-        dep_src = Path("../../..") / "modules" / dep / "src" / f"{dep}.vhd"
-        compile_do_lines.append(f"vcom -2008 {dep_src}")
-        dep_files.append((MODULES_DIR.relative_to(PROJECT_ROOT) / dep / "src" / f"{dep}.vhd"))
+        src_file = MODULES_DIR / dep / "src" / f"{dep}.vhd"
+        # with hashes we ensure only files changed since previous compile are re-compiled
+        if file_changed(src_file, sim_dir / ".filehashes.json"):
+            dep_src = Path("../../..") / "modules" / dep / "src" / f"{dep}.vhd"
+            compile_do_lines.append(f"vcom -2008 {dep_src}")
+            dep_files.append(src_file.relative_to(PROJECT_ROOT))
 
     filled = template.replace("{{DEPS}}", "\n".join(compile_do_lines))
     compile_do_file.write_text(filled)
     sync_files(dep_files)
     run("vsim -c -do compile.do", sim_dir.relative_to(PROJECT_ROOT))
-
 
 def main():
     if len(sys.argv) < 3:
