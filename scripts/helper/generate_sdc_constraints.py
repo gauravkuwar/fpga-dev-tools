@@ -2,13 +2,13 @@ from pathlib import Path
 import sys
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-from helper.signal_parser import parse_ports
+from helper.signal_parser import parse_ports, solve_generic_decl
 from helper.config import MODULES_DIR
 from helper.util import is_clock_port, get_vector_idx
 
 
 def generate_sdc(module_name: str, sdc_path: str, freq: float = 50.0):
-    ports = parse_ports(MODULES_DIR / module_name / "src" / f"{module_name}.vhd")
+    ports, generics = parse_ports(MODULES_DIR / module_name / "src" / f"{module_name}.vhd")
     clk_name = next((p for p in ports if is_clock_port(p)), "clk")
 
     input_ports = [p for p, props in ports.items() if props["direction"] == "in" and p != clk_name]
@@ -20,17 +20,17 @@ def generate_sdc(module_name: str, sdc_path: str, freq: float = 50.0):
     ]
 
     for port in input_ports:
-        if ports[port]["type"] == "std_logic":
+        if ports[port]["type"].lower() == "std_logic":
             lines.append(f"set_input_delay 0 -clock {clk_name} [get_ports {port}]")
         else:
-            for i in range(get_vector_idx(ports[port]["type"])[1]+1):
+            for i in range(get_vector_idx(solve_generic_decl(ports[port]["type"], generics))[1]+1):
                 lines.append(f"set_input_delay 0 -clock {clk_name} [get_ports {port}[{i}]]")
 
     for port in output_ports:
-        if ports[port]["type"] == "std_logic":
+        if ports[port]["type"].lower() == "std_logic":
             lines.append(f"set_output_delay 0 -clock {clk_name} [get_ports {port}]")
         else:
-            for i in range(get_vector_idx(ports[port]["type"])[1]+1):
+            for i in range(get_vector_idx(solve_generic_decl(ports[port]["type"], generics))[1]+1):
                 lines.append(f"set_output_delay 0 -clock {clk_name} [get_ports {port}[{i}]]")
 
     with open(sdc_path, "w") as f:

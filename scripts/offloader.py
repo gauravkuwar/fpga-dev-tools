@@ -43,9 +43,12 @@ def run(cmd: str, dir: str = REMOTE_DIR):
     try:
         with conn.cd(str(REMOTE_DIR / dir)):
             # check for interrupts
-            cmd_wrapped = f"bash -c 'trap \"echo __INTERRUPTED__; exit 130\" INT TERM; {cmd}'"
+            cmd_wrapped = f'bash -c "trap \'echo __INTERRUPTED__; exit 130\' INT TERM; {cmd}"'
             result = conn.run(cmd_wrapped, pty=True, hide=False, warn=True)
             if result.stdout.splitlines()[-1] == "__INTERRUPTED__":
+                sys.exit(1)
+            # Edge case for quartus
+            if "Error: Quartus Prime Analysis & Synthesis was unsuccessful." in result.stdout:
                 sys.exit(1)
     except KeyboardInterrupt:
         print("KEY BOARD INTERR")

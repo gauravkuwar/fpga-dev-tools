@@ -9,13 +9,14 @@ def parse_helper(line):
     percent = round(count / total, 5)
     return count, total, percent
 
-def generate_report(project_name, project_path, top_entity):
+def generate_report(project_name, project_path, top_entity, seed=1):
     fit_rpt_file = os.path.join(project_path, f"{project_name}.fit.rpt")
     fit_summary_file = os.path.join(project_path, f"{project_name}.fit.summary")
     sta_rpt_file = os.path.join(project_path, f"{project_name}.sta.rpt")
 
     result = {
-        "Top Level Entity": top_entity
+        "Top Level Entity": top_entity,
+        "Initial Fitter Seed": seed
     }
 
     # Parse Fitter Resource Usage Report

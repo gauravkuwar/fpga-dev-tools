@@ -1,7 +1,21 @@
-onerror {quit -code 1}
-onbreak {quit -code 1}
-
 vsim work.testbench
-log -r /*
+
+# Set time units to ns
+set units ns
+
+{{CLOCK_WAVE}}
+
+# Add input/output signals automatically
+# Assuming top-level testbench is called 'testbench'
+add wave -divider Inputs
+{{INPUTS}}
+
+add wave -divider Outputs
+{{OUTPUTS}}
+
+add wave -divider Other
+
 run -all
-quit
+
+# Zoom to fit all waves
+wave zoom full

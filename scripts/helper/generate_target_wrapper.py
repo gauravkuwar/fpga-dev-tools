@@ -7,7 +7,7 @@ from helper.config import MODULES_DIR, TEMPLATES_DIR
 from helper.util import is_clock_port
 
 def generate_target_wrapper(module_name: str):
-    ports = parse_ports(MODULES_DIR / module_name / "src" / f"{module_name}.vhd")
+    ports, generics = parse_ports(MODULES_DIR / module_name / "src" / f"{module_name}.vhd")
     clk_name = next((p for p in ports if is_clock_port(p)), "clk")
     clk_declared = clk_name in ports
 
@@ -17,6 +17,8 @@ def generate_target_wrapper(module_name: str):
     sig_decls = []
     port_list = []
     flop_out = []
+    generic_list = []
+    generic_map = []
 
     if not clk_declared:
         port_list.append(f"{clk_name} : in std_logic")
@@ -38,6 +40,27 @@ def generate_target_wrapper(module_name: str):
             flop_logic.append(f"reg_{name} <= {name};")
             port_map.append(f"{name} => reg_{name}")
 
+    for generic, prop in generics.items():
+        generic_list.append(f"{generic} : {prop["type"]} := {prop["default"]}")
+        generic_map.append(f"{generic} => {generic}")
+
+    if generic_list:
+        generic_list_str = (
+            "\n\tgeneric (\n\t\t" +
+            ";\n\t\t".join(generic_list) +
+            "\n\t);"
+        )
+    else:
+        generic_list_str = ""
+
+    if generic_map:
+        generic_map_str = (
+            "\n\tgeneric map (\n\t\t" +
+            ",\n\t\t".join(generic_map) +
+            "\n\t)"
+        )
+    else:
+        generic_map_str = ""
 
     template_path = TEMPLATES_DIR / "target_wrapper.vhd.tpl"
     with open(template_path, "r") as tpl:
@@ -49,6 +72,8 @@ def generate_target_wrapper(module_name: str):
     wrapper = wrapper.replace("{{FLOP_DECLS}}", "\n\t".join(flop_decls))
     wrapper = wrapper.replace("{{FLOP_LOGIC}}", "\n\t\t\t".join(flop_logic))
     wrapper = wrapper.replace("{{PORT_MAP}}", ",\n\t\t".join(port_map))
+    wrapper = wrapper.replace("{{GENERIC_MAP}}", generic_map_str)
+    wrapper = wrapper.replace("{{GENERIC_LIST}}", generic_list_str)
     wrapper = wrapper.replace("{{PORT_LIST}}", ";\n\t\t".join(port_list))
     wrapper = wrapper.replace("{{FLOP_OUT}}", "\n\t".join(flop_out))
 

@@ -31,19 +31,35 @@ def create_tb(module_name: str, force: bool = False):
         print(f"Error: Testbench already exists at '{output_file}'. Use -f to overwrite.")
         return
 
-    ports = parse_ports(entity_path)
+    ports, generics = parse_ports(entity_path)
     clked = is_clocked(ports)
+
+    generic_list = []
+    generic_map = []
+    for generic, prop in generics.items():
+        generic_list.append(f"constant {generic} : {prop["type"]} := {prop["default"]};")
+        generic_map.append(f"{generic} => {generic}")
+
+    if generic_map:
+        generic_map_str = (
+            "\n\tgeneric map (\n\t\t" +
+            ",\n\t\t".join(generic_map) +
+            "\n\t)"
+        )
+    else:
+        generic_map_str = ""
+
 
     template_file = TEMPLATES_DIR / ("testbench_clk.vhd.tpl" if clked else "testbench.vhd.tpl")
     output_file.parent.mkdir(parents=True, exist_ok=True)
-
-    print(entity_path)
 
     with open(template_file, "r") as template:
         content = template.read()
         content = content.replace("{{MODULE_NAME}}", module_name)
         content = content.replace("{{SIGNAL_DECLS}}", gen_signal_declarations(ports))
         content = content.replace("{{PORT_MAP}}", gen_port_map(ports))
+        content = content.replace("{{GENERIC_LIST}}", "\n\t".join(generic_list))
+        content = content.replace("{{GENERIC_MAP}}", generic_map_str)
 
     with open(output_file, "w") as tb:
         tb.write(content)

@@ -25,9 +25,6 @@ begin
     if rising_edge(clk) then
       if rst = '1' then
         -- Reset internal state
-        result <= (others => '0');
-        done   <= '0';
-        busy   <= '0';
       else
         -- TODO: RTL code
       end if;

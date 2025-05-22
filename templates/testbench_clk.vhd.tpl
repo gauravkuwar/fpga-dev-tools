@@ -6,6 +6,9 @@ entity testbench is
 end entity;
 
 architecture sim of testbench is
+  -- generics
+  {{GENERIC_LIST}}
+  
   constant CLK_PERIOD : time := 20 ns; 
   signal done_testing : std_logic := '0';
 
@@ -13,7 +16,7 @@ architecture sim of testbench is
   {{SIGNAL_DECLS}}
 begin
   -- Instantiate and test {{MODULE_NAME}}
-  uut: entity work.{{MODULE_NAME}}
+  uut: entity work.{{MODULE_NAME}}{{GENERIC_MAP}}
   port map (
     {{PORT_MAP}}
   );

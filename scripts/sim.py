@@ -13,17 +13,11 @@ def simulate(module_name):
     template_file = TEMPLATES_DIR / "simulate.do.tpl"
     simulate_do_file = sim_dir / "simulate.do"
     template = template_file.read_text()
-    simulate_do_file.write_text(template)
-    sync_files([simulate_do_file.relative_to(PROJECT_ROOT)])
-    run("vsim -c -do simulate.do", sim_dir.relative_to(PROJECT_ROOT))
-
-    template_file = TEMPLATES_DIR / "waveview.do.tpl"
-    template = template_file.read_text()
-    waveview_do_file = sim_dir / "waveview.do"
-
+    
     input_signals_lines = []
     output_signals_lines = []
-    all_ports = parse_ports(MODULES_DIR / module_name / "src" / f"{module_name}.vhd")
+    all_ports, _ = parse_ports(MODULES_DIR / module_name / "src" / f"{module_name}.vhd")
+    clock_wave = ""
 
     for port in all_ports:
         if not is_clock_port(port):
@@ -31,13 +25,18 @@ def simulate(module_name):
                 input_signals_lines.append(f"add wave /testbench/{port}")
             else:
                 output_signals_lines.append(f"add wave /testbench/{port}")
+        else:
+            clock_wave = f"add wave /testbench/{port}\n"
 
-    filled = template.replace("{{INPUTS}}", "\n".join(input_signals_lines)) \
+    filled = template.replace("{{CLOCK_WAVE}}", clock_wave) \
+                     .replace("{{INPUTS}}", "\n".join(input_signals_lines)) \
                      .replace("{{OUTPUTS}}", "\n".join(output_signals_lines))
     
-    template = template_file.read_text()
-    waveview_do_file.write_text(filled)
-    sync_files([waveview_do_file.relative_to(PROJECT_ROOT)])
+
+    simulate_do_file.write_text(filled)
+    sync_files([simulate_do_file.relative_to(PROJECT_ROOT)])
+
+    # vsim -do simulate.do
 
 def compile(module_name):
     # generates compile.do file and then runs compile on remote
